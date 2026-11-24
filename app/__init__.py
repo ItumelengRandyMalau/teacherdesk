@@ -1,5 +1,6 @@
 
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session
+from app.decorators import login_required
 from flask_pymongo import PyMongo
 from config import Config
 
@@ -19,10 +20,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/auth")
 
     @app.route("/")
+    @login_required
     def home():
-
-        if "user_id" not in session:
-            return redirect(url_for("auth.login"))
 
         return render_template(
             "index.html",
