@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ADMINISTRATION</p>
+
+  <h2>Administrator Dashboard</h2>
+
+  <p class="intro">
+    Manage school staff, learners and academic records from one place.
+  </p>
+
+  <section class="modules">
+    <div class="module">
+      <h3>Total Staff Accounts</h3>
+      <p>{{ total_users }}</p>
+    </div>
+
+    <div class="module">
+      <h3>Registered Teachers</h3>
+      <p>{{ total_teachers }}</p>
+    </div>
+  </section>
+</main>
+{% endblock %}

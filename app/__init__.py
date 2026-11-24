@@ -1,6 +1,6 @@
 
 from flask import Flask, render_template, session
-from app.decorators import login_required
+from app.decorators import login_required, role_required
 from flask_pymongo import PyMongo
 from config import Config
 
@@ -26,6 +26,23 @@ def create_app():
         return render_template(
             "index.html",
             username=session["username"]
+        )
+
+    @app.route("/admin")
+    @role_required("admin")
+    def admin_dashboard():
+
+        total_users = mongo.db.users.count_documents({})
+
+        total_teachers = mongo.db.users.count_documents({
+            "role": "teacher"
+        })
+
+        return render_template(
+            "admin.html",
+            username=session["username"],
+            total_users=total_users,
+            total_teachers=total_teachers
         )
 
     @app.route("/db-check")
