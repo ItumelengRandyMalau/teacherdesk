@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Teacher Dashboard | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">TEACHER WORKSPACE</p>
+
+  <h2>My Teaching Dashboard</h2>
+
+  <p class="intro">View your assigned classes and subjects.</p>
+
+  <section class="modules">
+    <div class="module">
+      <h3>My Assignments</h3>
+      <p>{{ assignments|length }}</p>
+    </div>
+  </section>
+
+  <section class="staff-list">
+    <h3>My Classes and Subjects</h3>
+
+    {% if assignments %}
+    <table>
+      <thead>
+        <tr>
+          <th>Grade</th>
+          <th>Class</th>
+          <th>Subject</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for assignment in assignments %}
+        <tr>
+          <td>{{ assignment.grade }}</td>
+          <td>{{ assignment.class_name }}</td>
+          <td>{{ assignment.subject }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>You have no classes or subjects assigned yet.</p>
+    <p>Please contact your school administrator.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

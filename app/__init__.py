@@ -25,6 +25,16 @@ def create_app():
     @login_required
     def home():
 
+        # Send administrators to their management dashboard.
+        if session.get("role") == "admin":
+            return redirect(url_for("admin_dashboard"))
+
+        # Send teachers to their personal dashboard.
+        if session.get("role") == "teacher":
+            return redirect(url_for("teacher_dashboard"))
+
+        # Clerks will use the general homepage until their
+        # dedicated workspace is created.
         return render_template(
             "index.html",
             username=session["username"]
@@ -45,6 +55,26 @@ def create_app():
             username=session["username"],
             total_users=total_users,
             total_teachers=total_teachers
+        )
+
+    @app.route("/teacher")
+    @role_required("teacher")
+    def teacher_dashboard():
+
+        # Convert the logged-in user's ID back into a MongoDB ObjectId.
+        teacher_id = ObjectId(session["user_id"])
+
+        # Retrieve only assignments belonging to this teacher.
+        assignments = list(
+            mongo.db.assignments.find({
+                "teacher_id": teacher_id
+            }).sort("grade", 1)
+        )
+
+        return render_template(
+            "teacher.html",
+            username=session["username"],
+            assignments=assignments
         )
 
     @app.route("/admin/staff")
