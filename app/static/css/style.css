@@ -98,3 +98,77 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Registration page */
+
+.register-container {
+  max-width: 450px;
+  margin: 70px auto;
+  padding: 35px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.register-container h1 {
+  color: #17365d;
+  margin-bottom: 10px;
+}
+
+.register-container h2 {
+  margin-bottom: 12px;
+}
+
+.register-container > p {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.form-group input:focus {
+  outline: 2px solid #2673b8;
+  border-color: #2673b8;
+}
+
+.register-container button {
+  width: 100%;
+  padding: 13px;
+  background: #17365d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.register-container button:hover {
+  background: #2673b8;
+}
+
+.message {
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #e8f5e9;
+  color: #256029;
+  border-radius: 6px;
+  font-weight: bold;
+}

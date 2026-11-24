@@ -16,7 +16,9 @@
 
       <p>Create your staff account to access TeacherDesk.</p>
 
-      <p class="message">Flask message: {{ message }}</p>
+      {% if message %}
+      <p class="message">{{ message }}</p>
+      {% endif %}
 
       <form method="POST" action="{{ url_for('auth.register') }}">
         <div class="form-group">
