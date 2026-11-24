@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block title %}Register Learner | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">LEARNER MANAGEMENT</p>
+
+  <h2>Register New Learner</h2>
+
+  <p class="intro">
+    Enter the learner's details below. TeacherDesk will generate a unique
+    learner number automatically.
+  </p>
+
+  <div class="register-container">
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('add_learner') }}">
+      <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input
+          type="text"
+          id="first_name"
+          name="first_name"
+          placeholder="Enter first name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="last_name">Surname</label>
+        <input
+          type="text"
+          id="last_name"
+          name="last_name"
+          placeholder="Enter surname"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="grade">Grade</label>
+        <select id="grade" name="grade" required>
+          <option value="">Select grade</option>
+          {% for number in range(8, 13) %}
+          <option value="Grade {{ number }}">Grade {{ number }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="class_name">Class</label>
+        <input
+          type="text"
+          id="class_name"
+          name="class_name"
+          placeholder="e.g. 8A"
+          required
+        />
+      </div>
+
+      <button type="submit">Register Learner</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

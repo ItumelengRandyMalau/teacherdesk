@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Learners | TeacherDesk{% endblock %}
+{% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">LEARNER MANAGEMENT</p>
+
+  <h2>Registered Learners</h2>
+
+  <p class="intro">View the learners registered on TeacherDesk.</p>
+
+  <p>
+    <a href="{{ url_for('add_learner') }}">Register New Learner</a>
+  </p>
+
+  {% if learners %}
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Learner Number</th>
+          <th>First Name</th>
+          <th>Surname</th>
+          <th>Grade</th>
+          <th>Class</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for learner in learners %}
+        <tr>
+          <td>{{ learner.learner_number }}</td>
+          <td>{{ learner.first_name }}</td>
+          <td>{{ learner.last_name }}</td>
+          <td>{{ learner.grade }}</td>
+          <td>{{ learner.class_name }}</td>
+          <td>{{ learner.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No learners have been registered yet.</p>
+  {% endif %}
+</main>
+{% endblock %}

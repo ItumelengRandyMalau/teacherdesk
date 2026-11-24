@@ -2,7 +2,8 @@ from flask import Flask, render_template, session, request, redirect, url_for
 from app.decorators import login_required, role_required
 from flask_pymongo import PyMongo
 from config import Config
-from app.models import User
+from app.models import User, Learner
+from app.learner_utils import generate_learner_number
 
 mongo = PyMongo()
 
@@ -108,6 +109,64 @@ def create_app():
             username=session["username"],
             message=message
         )
+
+    
+    @app.route("/admin/learners/add", methods=["GET", "POST"])
+    @role_required("admin")
+    def add_learner():
+
+        message = ""
+
+        if request.method == "POST":
+
+            first_name = request.form.get("first_name", "").strip()
+            last_name = request.form.get("last_name", "").strip()
+            grade = request.form.get("grade", "").strip()
+            class_name = request.form.get("class_name", "").strip()
+
+            # Check that all required learner details have been provided.
+            if not first_name or not last_name or not grade or not class_name:
+                message = "All fields are required."
+
+            else:
+                # Generate a unique learner number using the MongoDB counter.
+                learner_number = generate_learner_number(mongo.db)
+
+                # Create a learner object with the submitted information.
+                learner = Learner(
+                    learner_number,
+                    first_name,
+                    last_name,
+                    grade,
+                    class_name
+                )
+
+                # Save the learner record in MongoDB.
+                mongo.db.learners.insert_one(learner.to_dict())
+
+                return redirect(url_for("learner_directory"))
+
+        return render_template(
+            "add_learner.html",
+            username=session["username"],
+            message=message
+        )
+
+    @app.route("/admin/learners")
+    @role_required("admin")
+    def learner_directory():
+
+        # Retrieve all registered learners from MongoDB.
+        learners = list(
+            mongo.db.learners.find().sort("learner_number", -1)
+        )
+
+        return render_template(
+            "learners.html",
+            username=session["username"],
+            learners=learners
+        )
+
 
     @app.route("/db-check")
     def db_check():
