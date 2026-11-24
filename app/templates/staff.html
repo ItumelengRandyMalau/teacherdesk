@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %}Staff Directory | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ADMINISTRATION</p>
+
+  <h2>Staff Directory</h2>
+  <p>
+    <a href="{{ url_for('add_staff') }}">+ Add Staff Member</a>
+  </p>
+
+  <p class="intro">
+    View all registered staff accounts and their assigned roles.
+  </p>
+
+  <section class="modules">
+    <div class="module">
+      <h3>Total Staff Accounts</h3>
+      <p>{{ staff_members|length }}</p>
+    </div>
+  </section>
+
+  <section class="staff-list">
+    <h3>Registered Staff</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email Address</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for staff in staff_members %}
+        <tr>
+          <td>{{ staff.username }}</td>
+          <td>{{ staff.email }}</td>
+          <td>{{ staff.role|capitalize }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3">No staff accounts found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <p>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+  </p>
+</main>
+{% endblock %}

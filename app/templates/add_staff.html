@@ -1,0 +1,76 @@
+{% extends "base.html" %} {% block title %}Add Staff | TeacherDesk{% endblock %}
+{% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ADMINISTRATION</p>
+
+  <h2>Add Staff Member</h2>
+
+  <p class="intro">Create an account for a teacher or school clerk.</p>
+
+  <div class="register-container">
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('add_staff') }}">
+      <div class="form-group">
+        <label for="username">Full Name</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter full name"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter email address"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Temporary Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          minlength="8"
+          placeholder="At least 8 characters"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role">Staff Role</label>
+        <select id="role" name="role" required>
+          <option value="">Select a role</option>
+          <option value="teacher">Teacher</option>
+          <option value="clerk">Clerk</option>
+        </select>
+      </div>
+
+      <button type="submit">Create Staff Account</button>
+    </form>
+  </div>
+
+  <p>
+    <a href="{{ url_for('staff_directory') }}">Back to Staff Directory</a>
+  </p>
+</main>
+{% endblock %}
