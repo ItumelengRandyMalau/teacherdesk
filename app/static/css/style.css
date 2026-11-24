@@ -172,3 +172,30 @@ footer {
   border-radius: 6px;
   font-weight: bold;
 }
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-user a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 9px 15px;
+  border: 1px solid white;
+  border-radius: 5px;
+}
+
+.nav-user a:hover {
+  background: white;
+  color: #17365d;
+}
+
+@media (max-width: 600px) {
+  .nav-user {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
