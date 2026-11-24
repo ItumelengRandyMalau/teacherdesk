@@ -61,7 +61,7 @@ def create_app():
     @role_required("teacher")
     def teacher_dashboard():
 
-        # Convert the logged-in user's ID back into a MongoDB ObjectId.
+        # Identify the logged-in teacher.
         teacher_id = ObjectId(session["user_id"])
 
         # Retrieve only assignments belonging to this teacher.
@@ -70,6 +70,15 @@ def create_app():
                 "teacher_id": teacher_id
             }).sort("grade", 1)
         )
+
+        # Retrieve assessments belonging to each assignment.
+        for assignment in assignments:
+            assignment["assessments"] = list(
+                mongo.db.assessments.find({
+                    "assignment_id": assignment["_id"],
+                    "teacher_id": teacher_id
+                }).sort("term", 1)
+            )
 
         return render_template(
             "teacher.html",
