@@ -1,0 +1,87 @@
+{% extends "base.html" %} {% block title %}Assign Teacher | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ACADEMIC MANAGEMENT</p>
+
+  <h2>Assign Teacher to Class</h2>
+
+  <p class="intro">
+    Select a teacher and specify the grade, class and subject they teach.
+  </p>
+
+  <div class="register-container">
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %} {% if teachers %}
+    <form method="POST" action="{{ url_for('add_assignment') }}">
+      <div class="form-group">
+        <label for="teacher_id">Teacher</label>
+
+        <select id="teacher_id" name="teacher_id" required>
+          <option value="">Select teacher</option>
+
+          {% for teacher in teachers %}
+          <option value="{{ teacher._id }}">
+            {{ teacher.username }} ({{ teacher.email }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="grade">Grade</label>
+
+        <select id="grade" name="grade" required>
+          <option value="">Select grade</option>
+
+          {% for number in range(8, 13) %}
+          <option value="Grade {{ number }}">Grade {{ number }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="class_name">Class</label>
+
+        <input
+          type="text"
+          id="class_name"
+          name="class_name"
+          placeholder="e.g. 8A"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          placeholder="e.g. Mathematics"
+          required
+        />
+      </div>
+
+      <button type="submit">Save Assignment</button>
+    </form>
+    {% else %}
+    <p>No teacher accounts are available. Add a teacher first.</p>
+    {% endif %}
+  </div>
+
+  <p>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+  </p>
+</main>
+{% endblock %}

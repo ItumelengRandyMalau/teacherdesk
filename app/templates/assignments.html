@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block title %}Teacher Assignments | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ACADEMIC MANAGEMENT</p>
+
+  <h2>Teacher Assignments</h2>
+
+  <p class="intro">View the subjects and classes assigned to each teacher.</p>
+
+  <p>
+    <a href="{{ url_for('add_assignment') }}">+ Add Assignment</a>
+  </p>
+
+  {% if assignments %}
+  <table>
+    <thead>
+      <tr>
+        <th>Teacher</th>
+        <th>Grade</th>
+        <th>Class</th>
+        <th>Subject</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for assignment in assignments %}
+      <tr>
+        <td>{{ assignment.teacher.username }}</td>
+        <td>{{ assignment.grade }}</td>
+        <td>{{ assignment.class_name }}</td>
+        <td>{{ assignment.subject }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No teacher assignments have been created yet.</p>
+  {% endif %}
+
+  <p>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+  </p>
+</main>
+{% endblock %}

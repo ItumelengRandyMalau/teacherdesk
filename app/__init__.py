@@ -4,6 +4,7 @@ from flask_pymongo import PyMongo
 from config import Config
 from app.models import User, Learner
 from app.learner_utils import generate_learner_number
+from bson import ObjectId
 
 mongo = PyMongo()
 
@@ -168,6 +169,90 @@ def create_app():
         )
 
 
+    @app.route("/admin/assignments/add", methods=["GET", "POST"])
+    @role_required("admin")
+    def add_assignment():
+
+        message = ""
+
+        # Retrieve existing teacher accounts for the dropdown.
+        teachers = list(
+            mongo.db.users.find(
+                {"role": "teacher"},
+                {"username": 1, "email": 1}
+            )
+        )
+
+        if request.method == "POST":
+
+            teacher_id = request.form.get("teacher_id", "")
+            grade = request.form.get("grade", "").strip()
+            class_name = request.form.get("class_name", "").strip()
+            subject = request.form.get("subject", "").strip()
+
+            # Check that all assignment details have been provided.
+            if not teacher_id or not grade or not class_name or not subject:
+                message = "All fields are required."
+
+            else:
+                # Confirm that the selected teacher account exists.
+                teacher = mongo.db.users.find_one({
+                    "_id": ObjectId(teacher_id),
+                    "role": "teacher"
+                })
+
+                if not teacher:
+                    message = "Please select a valid teacher."
+
+                else:
+                    assignment = {
+                        "teacher_id": teacher["_id"],
+                        "grade": grade,
+                        "class_name": class_name,
+                        "subject": subject
+                    }
+
+                    # Save the assignment in MongoDB.
+                    mongo.db.assignments.insert_one(assignment)
+
+                    return redirect(url_for("admin_dashboard"))
+
+        return render_template(
+            "add_assignment.html",
+            username=session["username"],
+            teachers=teachers,
+            message=message
+        )
+
+    @app.route("/admin/assignments")
+    @role_required("admin")
+    def assignment_directory():
+
+        # Retrieve all assignments and match each one to its teacher.
+        assignments = list(
+            mongo.db.assignments.aggregate([
+                {
+                    "$lookup": {
+                        "from": "users",
+                        "localField": "teacher_id",
+                        "foreignField": "_id",
+                        "as": "teacher"
+                    }
+                },
+                {
+                    "$unwind": "$teacher"
+                },
+                {
+                    "$sort": {"grade": 1, "class_name": 1}
+                }
+            ])
+        )
+
+        return render_template(
+            "assignments.html",
+            username=session["username"],
+            assignments=assignments
+        )
     @app.route("/db-check")
     def db_check():
         mongo.cx.admin.command("ping")
