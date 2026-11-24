@@ -33,6 +33,7 @@ endblock %} {% block header %}
           <th>Grade</th>
           <th>Class</th>
           <th>Subject</th>
+          <th>Action</th>
         </tr>
       </thead>
 
@@ -42,6 +43,16 @@ endblock %} {% block header %}
           <td>{{ assignment.grade }}</td>
           <td>{{ assignment.class_name }}</td>
           <td>{{ assignment.subject }}</td>
+          <td>
+            <a
+              href="{{ url_for(
+        'add_assessment',
+        assignment_id=assignment._id
+    ) }}"
+            >
+              Add Assessment
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

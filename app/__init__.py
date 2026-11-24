@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect, url_for
+from flask import Flask, render_template, session, request, redirect, url_for, abort
 from app.decorators import login_required, role_required
 from flask_pymongo import PyMongo
 from config import Config
@@ -75,6 +75,74 @@ def create_app():
             "teacher.html",
             username=session["username"],
             assignments=assignments
+        )
+    @app.route(
+        "/teacher/assignments/<assignment_id>/assessments/add",
+        methods=["GET", "POST"]
+    )
+    @role_required("teacher")
+    def add_assessment(assignment_id):
+
+        message = ""
+
+        # Identify the logged-in teacher.
+        teacher_id = ObjectId(session["user_id"])
+
+        # Find the requested assignment, but only if it belongs
+        # to the logged-in teacher.
+        try:
+            assignment = mongo.db.assignments.find_one({
+                "_id": ObjectId(assignment_id),
+                "teacher_id": teacher_id
+            })
+        except Exception:
+            assignment = None
+
+        # Prevent teachers from accessing another teacher's assignment.
+        if not assignment:
+            abort(404)
+
+        if request.method == "POST":
+
+            title = request.form.get("title", "").strip()
+            assessment_type = request.form.get("assessment_type", "").strip()
+            term = request.form.get("term", "").strip()
+            max_mark = request.form.get("max_mark", "").strip()
+
+            # Check that all fields have been completed.
+            if not title or not assessment_type or not term or not max_mark:
+                message = "All fields are required."
+
+            else:
+                try:
+                    max_mark = float(max_mark)
+
+                    if max_mark <= 0:
+                        message = "Maximum mark must be greater than zero."
+
+                except ValueError:
+                    message = "Please enter a valid maximum mark."
+
+                if not message:
+                    assessment = {
+                        "assignment_id": assignment["_id"],
+                        "teacher_id": teacher_id,
+                        "title": title,
+                        "assessment_type": assessment_type,
+                        "term": term,
+                        "max_mark": max_mark
+                    }
+
+                    # Save the assessment in MongoDB.
+                    mongo.db.assessments.insert_one(assessment)
+
+                    return redirect(url_for("teacher_dashboard"))
+
+        return render_template(
+            "add_assessment.html",
+            username=session["username"],
+            assignment=assignment,
+            message=message
         )
 
     @app.route("/admin/staff")
