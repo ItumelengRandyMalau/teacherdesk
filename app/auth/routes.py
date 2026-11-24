@@ -1,5 +1,6 @@
 
-from flask import render_template, request
+from flask import render_template, request, session, redirect, url_for
+from werkzeug.security import check_password_hash
 from app import mongo
 from app.models import User
 from app.auth import auth
@@ -38,3 +39,37 @@ def register():
             message = "Registration successful!"
 
     return render_template("register.html", message=message)
+
+@auth.route("/login", methods=["GET", "POST"])
+def login():
+
+    message = ""
+
+    if request.method == "POST":
+
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        user = mongo.db.users.find_one({"email": email})
+
+        if user and check_password_hash(user["password_hash"], password):
+
+            session.clear()
+
+            session["user_id"] = str(user["_id"])
+            session["username"] = user["username"]
+            session["role"] = user["role"]
+
+            return redirect(url_for("home"))
+
+        else:
+            message = "Invalid email address or password."
+
+    return render_template("login.html", message=message)
+
+@auth.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect(url_for("auth.login"))
