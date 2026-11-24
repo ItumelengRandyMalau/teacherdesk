@@ -22,11 +22,18 @@ endblock %} {% block header %}
     <div class="module">
       <h3>Total Staff Accounts</h3>
       <p>{{ total_users }}</p>
+      <a href="{{ url_for('staff_directory') }}">Manage Staff</a>
     </div>
 
     <div class="module">
       <h3>Registered Teachers</h3>
       <p>{{ total_teachers }}</p>
+    </div>
+
+    <div class="module">
+      <h3>Learner Management</h3>
+      <p>Register and view learners.</p>
+      <a href="{{ url_for('learner_directory') }}">Manage Learners</a>
     </div>
   </section>
 </main>
