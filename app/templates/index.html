@@ -1,53 +1,36 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends "base.html" %} {% block title %}TeacherDesk | School Portal{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
 
-    <title>TeacherDesk | School Portal</title>
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">WELCOME TO TEACHERDESK</p>
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
+  <h2>Making school administration simpler.</h2>
 
-  <body>
-    <header class="navbar">
-      <h1>TeacherDesk</h1>
+  <p class="intro">
+    Manage assessments, capture learner marks and access teaching resources in
+    one place.
+  </p>
 
-      <div class="nav-user">
-        <span>Welcome, {{ username }}!</span>
-        <a href="{{ url_for('auth.logout') }}">Logout</a>
-      </div>
-    </header>
+  <section class="modules">
+    <div class="module">
+      <h3>Assessment Management</h3>
+      <p>Capture learner marks and monitor academic performance.</p>
+    </div>
 
-    <main class="welcome">
-      <p class="eyebrow">WELCOME TO TEACHERDESK</p>
-
-      <h2>Making school administration simpler.</h2>
-
-      <p class="intro">
-        Manage assessments, capture learner marks and access teaching resources
-        in one place.
+    <div class="module">
+      <h3>Teaching Resource Bank</h3>
+      <p>
+        Organise and access question papers, memorandums and teaching materials.
       </p>
-
-      <section class="modules">
-        <div class="module">
-          <h3>Assessment Management</h3>
-          <p>Capture learner marks and monitor academic performance.</p>
-        </div>
-
-        <div class="module">
-          <h3>Teaching Resource Bank</h3>
-          <p>
-            Organise and access question papers, memorandums and teaching
-            materials.
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <footer>TeacherDesk &copy; 2026</footer>
-  </body>
-</html>
+    </div>
+  </section>
+</main>
+{% endblock %}
