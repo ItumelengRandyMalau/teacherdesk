@@ -33,8 +33,10 @@ def create_app():
         if session.get("role") == "teacher":
             return redirect(url_for("teacher_dashboard"))
 
-        # Clerks will use the general homepage until their
-        # dedicated workspace is created.
+        # Send clerks to their dedicated workspace.
+        if session.get("role") == "clerk":
+            return redirect(url_for("clerk_dashboard"))
+
         return render_template(
             "index.html",
             username=session["username"]
