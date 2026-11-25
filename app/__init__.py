@@ -5,6 +5,7 @@ from config import Config
 from app.models import User, Learner
 from app.learner_utils import generate_learner_number
 from bson import ObjectId
+from flask_wtf.csrf import CSRFProtect
 
 mongo = PyMongo()
 
@@ -12,9 +13,13 @@ mongo = PyMongo()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+     # Protect POST requests against cross-site request forgery.
+    CSRFProtect(app)
 
     from app.auth import auth
 
+    if not app.config["SECRET_KEY"]:
+        raise RuntimeError("SECRET_KEY is not configured.")
     if not app.config["MONGO_URI"]:
         raise RuntimeError("MONGO_URI is not configured.")
 
@@ -787,9 +792,5 @@ def create_app():
             username=session["username"],
             assignments=assignments
         )
-    @app.route("/db-check")
-    def db_check():
-        mongo.cx.admin.command("ping")
-        return {"message": "MongoDB connection successful!"}
-
+   
     return app

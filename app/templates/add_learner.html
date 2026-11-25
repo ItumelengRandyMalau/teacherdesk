@@ -5,7 +5,10 @@ endblock %} {% block header %}
 
   <div class="nav-user">
     <span>Welcome, {{ username }}!</span>
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
+    <form method="POST" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit">Logout</button>
+    </form>
   </div>
 </header>
 {% endblock %} {% block content %}
@@ -25,6 +28,7 @@ endblock %} {% block header %}
     {% endif %}
 
     <form method="POST" action="{{ url_for('add_learner') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="form-group">
         <label for="first_name">First Name</label>
         <input

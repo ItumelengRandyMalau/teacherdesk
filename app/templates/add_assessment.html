@@ -19,6 +19,7 @@ endblock %} {% block content %}
     {% endif %}
 
     <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <label for="title">Assessment Title</label>
       <input
         type="text"

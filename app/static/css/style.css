@@ -179,16 +179,22 @@ footer {
   gap: 20px;
 }
 
-.nav-user a {
+.nav-user form {
+  margin: 0;
+}
+
+.nav-user button {
   color: white;
-  text-decoration: none;
+  background: transparent;
+  font: inherit;
   font-weight: bold;
   padding: 9px 15px;
   border: 1px solid white;
   border-radius: 5px;
+  cursor: pointer;
 }
 
-.nav-user a:hover {
+.nav-user button:hover {
   background: white;
   color: #17365d;
 }

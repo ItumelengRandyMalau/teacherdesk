@@ -38,9 +38,10 @@ def login():
 
     return render_template("login.html", message=message)
 
-@auth.route("/logout")
+@auth.route("/logout", methods=["POST"])
 def logout():
 
+    # Clear the user's session when they explicitly log out.
     session.clear()
 
     return redirect(url_for("auth.login"))
