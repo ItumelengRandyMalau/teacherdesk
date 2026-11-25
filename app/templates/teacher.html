@@ -46,12 +46,44 @@ endblock %} {% block header %}
           <td>
             <a
               href="{{ url_for(
-        'add_assessment',
-        assignment_id=assignment._id
-    ) }}"
+                'add_assessment',
+                assignment_id=assignment._id
+            ) }}"
             >
               Add Assessment
             </a>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="4">
+            <strong>Assessments</strong>
+
+            {% if assignment.assessments %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Term</th>
+                  <th>Maximum Mark</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for assessment in assignment.assessments %}
+                <tr>
+                  <td>{{ assessment.title }}</td>
+                  <td>{{ assessment.assessment_type }}</td>
+                  <td>{{ assessment.term }}</td>
+                  <td>{{ assessment.max_mark }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <p>No assessments created for this class yet.</p>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

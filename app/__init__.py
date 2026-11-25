@@ -154,6 +154,52 @@ def create_app():
             message=message
         )
 
+    @app.route("/teacher/assessments/<assessment_id>/marks")
+    @role_required("teacher")
+    def enter_marks(assessment_id):
+
+        # Identify the logged-in teacher.
+        teacher_id = ObjectId(session["user_id"])
+
+        # Find the assessment, but only if it belongs to this teacher.
+        try:
+            assessment = mongo.db.assessments.find_one({
+                "_id": ObjectId(assessment_id),
+                "teacher_id": teacher_id
+            })
+        except Exception:
+            assessment = None
+
+        # Prevent access to another teacher's assessment.
+        if not assessment:
+            abort(404)
+
+        # Retrieve the class linked to this assessment.
+        assignment = mongo.db.assignments.find_one({
+            "_id": assessment["assignment_id"],
+            "teacher_id": teacher_id
+        })
+
+        if not assignment:
+            abort(404)
+
+        # Retrieve only active learners in the assigned class.
+        learners = list(
+            mongo.db.learners.find({
+                "grade": assignment["grade"],
+                "class_name": assignment["class_name"],
+                "status": "active"
+            }).sort("learner_number", 1)
+        )
+
+        return render_template(
+            "enter_marks.html",
+            username=session["username"],
+            assessment=assessment,
+            assignment=assignment,
+            learners=learners
+        )
+
     @app.route("/admin/staff")
     @role_required("admin")
     def staff_directory():
