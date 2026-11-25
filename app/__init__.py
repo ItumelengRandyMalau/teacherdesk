@@ -280,7 +280,7 @@ def create_app():
                 "assessment_id": assessment["_id"]
             })
         }
-
+        print(f"MARK ENTRY MESSAGE: {message!r}")
         return render_template(
             "enter_marks.html",
             username=session["username"],

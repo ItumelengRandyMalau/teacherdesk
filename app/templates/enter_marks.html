@@ -19,36 +19,45 @@
       Maximum mark: {{ assessment.max_mark }}
     </p>
 
-    {% if learners %}
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %} {% if learners %}
 
-    <table>
-      <thead>
-        <tr>
-          <th>Learner Number</th>
-          <th>Learner Name</th>
-          <th>Mark</th>
-        </tr>
-      </thead>
+    <form method="POST">
+      <table>
+        <thead>
+          <tr>
+            <th>Learner Number</th>
+            <th>Learner Name</th>
+            <th>Mark</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        {% for learner in learners %}
-        <tr>
-          <td>{{ learner.learner_number }}</td>
-          <td>{{ learner.first_name }} {{ learner.last_name }}</td>
-          <td>
-            <input
-              type="number"
-              name="mark_{{ learner._id }}"
-              min="0"
-              max="{{ assessment.max_mark }}"
-              step="0.5"
-              placeholder="Enter mark"
-            />
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        <tbody>
+          {% for learner in learners %}
+          <tr>
+            <td>{{ learner.learner_number }}</td>
+
+            <td>{{ learner.first_name }} {{ learner.last_name }}</td>
+
+            <td>
+              <input
+                type="number"
+                name="mark_{{ learner._id }}"
+                min="0"
+                max="{{ assessment.max_mark }}"
+                step="0.5"
+                value="{{ saved_marks.get(learner._id|string, '') }}"
+                placeholder="Enter mark"
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <button type="submit">Save Marks</button>
+    </form>
 
     {% else %}
 
