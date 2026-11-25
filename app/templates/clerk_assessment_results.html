@@ -1,0 +1,120 @@
+{% extends "base.html" %} {% block title %}Assessment Results | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">CLERK WORKSPACE</p>
+
+  <h2>Assessment Results</h2>
+
+  <p class="intro">
+    {{ assignment.grade }} | {{ assignment.class_name }} | {{ assignment.subject
+    }}
+  </p>
+
+  <section class="staff-list">
+    <h3>{{ assessment.title }}</h3>
+
+    <p>
+      Assessment type: {{ assessment.assessment_type }}<br />
+      Term: {{ assessment.term }}<br />
+      Maximum mark: {{ assessment.max_mark }}
+    </p>
+
+    <section class="modules">
+      <div class="module">
+        <h3>Class Average</h3>
+        <p>
+          {% if average_percentage is not none %} {{ average_percentage }}% {%
+          else %} N/A {% endif %}
+        </p>
+      </div>
+
+      <div class="module">
+        <h3>Marked Learners</h3>
+        <p>{{ marked_count }}</p>
+      </div>
+
+      <div class="module">
+        <h3>Unmarked Learners</h3>
+        <p>{{ unmarked_count }}</p>
+      </div>
+    </section>
+
+    <h3>Individual Learner Results</h3>
+
+    {% if results %}
+    <table>
+      <thead>
+        <tr>
+          <th>Learner Number</th>
+          <th>Learner Name</th>
+          <th>Mark</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td>{{ result.learner.learner_number }}</td>
+
+          <td>
+            {{ result.learner.first_name }} {{ result.learner.last_name }}
+          </td>
+
+          <td>
+            {% if result.mark %} {{ result.mark.mark }} / {{ assessment.max_mark
+            }} {% else %} Not marked {% endif %}
+          </td>
+
+          <td>
+            {% if result.percentage is not none %} {{ result.percentage }}% {%
+            else %} N/A {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+    <p>No active learners were found in this class.</p>
+    {% endif %}
+
+    <h3>Performance Distribution</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Performance Range</th>
+          <th>Number of Learners</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for range, count in performance_distribution.items() %}
+        <tr>
+          <td>{{ range }}</td>
+          <td>{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p>
+      <a href="{{ url_for('clerk_assessments') }}"> Back to All Assessments </a>
+    </p>
+
+    <p>
+      <a href="{{ url_for('clerk_dashboard') }}"> Back to Clerk Dashboard </a>
+    </p>
+  </section>
+</main>
+{% endblock %}
