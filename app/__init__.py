@@ -59,6 +59,29 @@ def create_app():
             total_teachers=total_teachers
         )
 
+    
+    @app.route("/clerk")
+    @role_required("clerk")
+    def clerk_dashboard():
+
+        # Retrieve the number of learners registered at the school.
+        total_learners = mongo.db.learners.count_documents({})
+
+        # Retrieve the number of assessments created by teachers.
+        total_assessments = mongo.db.assessments.count_documents({})
+
+        # Retrieve the number of marks entered across all assessments.
+        total_marks = mongo.db.marks.count_documents({})
+
+        return render_template(
+            "clerk.html",
+            username=session["username"],
+            total_learners=total_learners,
+            total_assessments=total_assessments,
+            total_marks=total_marks
+        )
+
+
     @app.route("/teacher")
     @role_required("teacher")
     def teacher_dashboard():

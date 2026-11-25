@@ -1,0 +1,48 @@
+{% extends "base.html" %} {% block title %}Clerk Dashboard | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">CLERK WORKSPACE</p>
+
+  <h2>School Records Dashboard</h2>
+
+  <p class="intro">
+    View learner and assessment records and prepare results for transfer to
+    SASAMS.
+  </p>
+
+  <section class="modules">
+    <div class="module">
+      <h3>Registered Learners</h3>
+      <p>{{ total_learners }}</p>
+    </div>
+
+    <div class="module">
+      <h3>Assessments</h3>
+      <p>{{ total_assessments }}</p>
+    </div>
+
+    <div class="module">
+      <h3>Marks Recorded</h3>
+      <p>{{ total_marks }}</p>
+    </div>
+  </section>
+
+  <section class="staff-list">
+    <h3>School Records</h3>
+
+    <p>
+      Assessment results and learner performance records will be available here
+      for review and preparation.
+    </p>
+  </section>
+</main>
+{% endblock %}
