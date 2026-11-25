@@ -280,7 +280,7 @@ def create_app():
                 "assessment_id": assessment["_id"]
             })
         }
-        print(f"MARK ENTRY MESSAGE: {message!r}")
+        
         return render_template(
             "enter_marks.html",
             username=session["username"],
@@ -289,6 +289,122 @@ def create_app():
             learners=learners,
             saved_marks=saved_marks,
             message=message
+        )
+    
+    @app.route("/teacher/assessments/<assessment_id>/results")
+    @role_required("teacher")
+    def assessment_results(assessment_id):
+
+        # Identify the logged-in teacher.
+        teacher_id = ObjectId(session["user_id"])
+
+        # Find the assessment, but only if it belongs to this teacher.
+        try:
+            assessment = mongo.db.assessments.find_one({
+                "_id": ObjectId(assessment_id),
+                "teacher_id": teacher_id
+            })
+        except Exception:
+            assessment = None
+
+        if not assessment:
+            abort(404)
+
+        # Retrieve the class linked to this assessment.
+        assignment = mongo.db.assignments.find_one({
+            "_id": assessment["assignment_id"],
+            "teacher_id": teacher_id
+        })
+
+        if not assignment:
+            abort(404)
+
+        # Retrieve all active learners in this class.
+        learners = list(
+            mongo.db.learners.find({
+                "grade": assignment["grade"],
+                "class_name": assignment["class_name"],
+                "status": "active"
+            }).sort("learner_number", 1)
+        )
+
+        # Retrieve marks saved for this assessment.
+        saved_marks = mongo.db.marks.find({
+            "assessment_id": assessment["_id"],
+            "teacher_id": teacher_id
+        })
+
+        # Organise marks by learner ID for easy lookup.
+        marks_by_learner = {
+            str(record["learner_id"]): record
+            for record in saved_marks
+        }
+
+        results = []
+        percentages = []
+
+        # Include every active learner, even if not yet marked.
+        for learner in learners:
+
+            mark_record = marks_by_learner.get(
+                str(learner["_id"])
+            )
+
+            percentage = (
+                mark_record.get("percentage")
+                if mark_record else None
+            )
+
+            if percentage is not None:
+                percentages.append(float(percentage))
+
+            results.append({
+                "learner": learner,
+                "mark": mark_record,
+                "percentage": percentage
+            })
+
+        # Calculate the average percentage of marked learners.
+        average_percentage = (
+            round(sum(percentages) / len(percentages), 2)
+            if percentages else None
+        )
+
+        # Count learners in each performance range.
+        performance_distribution = {
+            "Below 40%": 0,
+            "40–49%": 0,
+            "50–59%": 0,
+            "60–69%": 0,
+            "70–79%": 0,
+            "80–100%": 0
+        }
+
+        for percentage in percentages:
+
+            if percentage < 40:
+                performance_distribution["Below 40%"] += 1
+            elif percentage < 50:
+                performance_distribution["40–49%"] += 1
+            elif percentage < 60:
+                performance_distribution["50–59%"] += 1
+            elif percentage < 70:
+                performance_distribution["60–69%"] += 1
+            elif percentage < 80:
+                performance_distribution["70–79%"] += 1
+            else:
+                performance_distribution["80–100%"] += 1
+
+        return render_template(
+            "assessment_results.html",
+            username=session["username"],
+            assessment=assessment,
+            assignment=assignment,
+            results=results,
+            average_percentage=average_percentage,
+            marked_count=len(percentages),
+            unmarked_count=len(learners) - len(percentages),
+            performance_distribution=performance_distribution
         )
 
 

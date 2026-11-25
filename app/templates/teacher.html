@@ -46,9 +46,9 @@ endblock %} {% block header %}
           <td>
             <a
               href="{{ url_for(
-                'add_assessment',
-                assignment_id=assignment._id
-            ) }}"
+        'add_assessment',
+        assignment_id=assignment._id
+      ) }}"
             >
               Add Assessment
             </a>
@@ -78,14 +78,26 @@ endblock %} {% block header %}
                   <td>{{ assessment.assessment_type }}</td>
                   <td>{{ assessment.term }}</td>
                   <td>{{ assessment.max_mark }}</td>
+
                   <td>
                     <a
                       href="{{ url_for(
-        'enter_marks',
-        assessment_id=assessment._id
+      'enter_marks',
+      assessment_id=assessment._id
     ) }}"
                     >
                       Enter Marks
+                    </a>
+
+                    |
+
+                    <a
+                      href="{{ url_for(
+      'assessment_results',
+      assessment_id=assessment._id
+    ) }}"
+                    >
+                      View Results
                     </a>
                   </td>
                 </tr>
