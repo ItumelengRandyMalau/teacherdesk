@@ -432,6 +432,42 @@ def create_app():
             performance_distribution=performance_distribution
         )
 
+    @app.route("/clerk/assessments")
+    @role_required("clerk")
+    def clerk_assessments():
+
+        # Retrieve all assessments created by teachers.
+        assessments = list(
+            mongo.db.assessments.find({})
+        )
+
+        # Attach class and teacher information to each assessment.
+        for assessment in assessments:
+
+            assignment = mongo.db.assignments.find_one({
+                "_id": assessment["assignment_id"]
+            })
+
+            assessment["assignment"] = assignment
+
+            # Find the teacher responsible for the assignment.
+            if assignment:
+                teacher = mongo.db.users.find_one({
+                    "_id": assignment["teacher_id"]
+                })
+            else:
+                teacher = None
+
+            assessment["teacher_name"] = (
+                teacher["username"] if teacher else "Unknown"
+            )
+
+        return render_template(
+            "clerk_assessments.html",
+            username=session["username"],
+            assessments=assessments
+        )
+
 
     @app.route("/admin/staff")
     @role_required("admin")
