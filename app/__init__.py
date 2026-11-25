@@ -154,9 +154,15 @@ def create_app():
             message=message
         )
 
-    @app.route("/teacher/assessments/<assessment_id>/marks")
+    
+    @app.route(
+        "/teacher/assessments/<assessment_id>/marks",
+        methods=["GET", "POST"]
+    )
     @role_required("teacher")
     def enter_marks(assessment_id):
+
+        message = ""
 
         # Identify the logged-in teacher.
         teacher_id = ObjectId(session["user_id"])
@@ -192,13 +198,99 @@ def create_app():
             }).sort("learner_number", 1)
         )
 
+        if request.method == "POST":
+
+            # Process each learner's submitted mark.
+            for learner in learners:
+
+                field_name = f"mark_{learner['_id']}"
+                submitted_mark = request.form.get(field_name, "").strip()
+
+                # Skip learners whose mark was left blank.
+                if not submitted_mark:
+                    continue
+
+                try:
+                    mark = float(submitted_mark)
+
+                    if mark < 0 or mark > assessment["max_mark"]:
+                        message = (
+                            f"Marks must be between 0 and "
+                            f"{assessment['max_mark']}."
+                        )
+                        break
+
+                except ValueError:
+                    message = "Please enter valid numeric marks."
+                    break
+
+            # Save marks only if all submitted values are valid.
+            if not message:
+
+                for learner in learners:
+
+                    field_name = f"mark_{learner['_id']}"
+                    submitted_mark = request.form.get(
+                        field_name, ""
+                    ).strip()
+
+                    if not submitted_mark:
+                        continue
+
+                    mark = float(submitted_mark)
+
+                    # Update an existing mark or create a new one.
+                    mongo.db.marks.update_one(
+                        {
+                            "assessment_id": assessment["_id"],
+                            "learner_id": learner["_id"]
+                        },
+                        {
+                            "$set": {
+                                "assessment_id": assessment["_id"],
+                                "assignment_id": assignment["_id"],
+                                "teacher_id": teacher_id,
+                                "learner_id": learner["_id"],
+                                "learner_number": learner["learner_number"],
+                                "mark": mark,
+                                "max_mark": assessment["max_mark"],
+                                "percentage": round(
+                                    (mark / assessment["max_mark"]) * 100,
+                                    2
+                                )
+                            }
+                        },
+                        upsert=True
+                    )
+
+                if any(
+                    request.form.get(
+                        f"mark_{learner['_id']}", ""
+                    ).strip()
+                    for learner in learners
+                ):
+                    message = "Marks saved successfully."
+                else:
+                    message = "Please enter at least one mark."
+
+        # Retrieve marks already saved for this assessment.
+        saved_marks = {
+            str(record["learner_id"]): record["mark"]
+            for record in mongo.db.marks.find({
+                "assessment_id": assessment["_id"]
+            })
+        }
+
         return render_template(
             "enter_marks.html",
             username=session["username"],
             assessment=assessment,
             assignment=assignment,
-            learners=learners
+            learners=learners,
+            saved_marks=saved_marks,
+            message=message
         )
+
 
     @app.route("/admin/staff")
     @role_required("admin")

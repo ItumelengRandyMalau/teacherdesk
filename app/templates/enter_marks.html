@@ -1,0 +1,66 @@
+{% extends "base.html" %} {% block title %}Enter Marks | TeacherDesk{% endblock
+%} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">TEACHER WORKSPACE</p>
+
+  <h2>Enter Assessment Marks</h2>
+
+  <p class="intro">
+    {{ assignment.grade }} | {{ assignment.class_name }} | {{ assignment.subject
+    }}
+  </p>
+
+  <section class="staff-list">
+    <h3>{{ assessment.title }}</h3>
+
+    <p>
+      Assessment type: {{ assessment.assessment_type }}<br />
+      Term: {{ assessment.term }}<br />
+      Maximum mark: {{ assessment.max_mark }}
+    </p>
+
+    {% if learners %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Learner Number</th>
+          <th>Learner Name</th>
+          <th>Mark</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for learner in learners %}
+        <tr>
+          <td>{{ learner.learner_number }}</td>
+          <td>{{ learner.first_name }} {{ learner.last_name }}</td>
+          <td>
+            <input
+              type="number"
+              name="mark_{{ learner._id }}"
+              min="0"
+              max="{{ assessment.max_mark }}"
+              step="0.5"
+              placeholder="Enter mark"
+            />
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+
+    <p>No active learners were found in this class.</p>
+
+    {% endif %}
+
+    <p>
+      <a href="{{ url_for('teacher_dashboard') }}">
+        Back to Teacher Dashboard
+      </a>
+    </p>
+  </section>
+</main>
+{% endblock %}

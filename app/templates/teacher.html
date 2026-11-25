@@ -67,6 +67,7 @@ endblock %} {% block header %}
                   <th>Type</th>
                   <th>Term</th>
                   <th>Maximum Mark</th>
+                  <th>Action</th>
                 </tr>
               </thead>
 
@@ -77,6 +78,16 @@ endblock %} {% block header %}
                   <td>{{ assessment.assessment_type }}</td>
                   <td>{{ assessment.term }}</td>
                   <td>{{ assessment.max_mark }}</td>
+                  <td>
+                    <a
+                      href="{{ url_for(
+        'enter_marks',
+        assessment_id=assessment._id
+    ) }}"
+                    >
+                      Enter Marks
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
