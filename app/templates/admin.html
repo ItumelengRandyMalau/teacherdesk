@@ -6,7 +6,7 @@ endblock %} {% block header %}
   <div class="nav-user">
     <span>Welcome, {{ username }}!</span>
     <form method="POST" action="{{ url_for('auth.logout') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <button type="submit">Logout</button>
     </form>
   </div>
@@ -29,8 +29,11 @@ endblock %} {% block header %}
     </div>
 
     <div class="module">
-      <h3>Registered Teachers</h3>
-      <p>{{ total_teachers }}</p>
+      <h3>Question Paper Bank</h3>
+      <p>Manage the school's question paper library.</p>
+      <a href="{{ url_for('papers.paper_bank') }}">Open Paper Bank</a>
+    </div>
+
     </div>
 
     <div class="module">

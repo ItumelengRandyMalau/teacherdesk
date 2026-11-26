@@ -1,0 +1,111 @@
+{% extends "base.html" %} {% block title %}Upload Question Paper | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <form method="POST" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button type="submit">Logout</button>
+    </form>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ACADEMIC RESOURCES</p>
+
+  <h2>Upload Question Paper</h2>
+
+  <p class="intro">
+    Add a PDF question paper to the school's shared resource library.
+  </p>
+
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <p class="message">{{ message }}</p>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <section class="register-container">
+    <form
+      method="POST"
+      action="{{ url_for('papers.upload_paper') }}"
+      enctype="multipart/form-data"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div class="form-group">
+        <label for="title">Paper Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="e.g. Grade 10 Mathematics Test 1"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="grade">Grade</label>
+        <select id="grade" name="grade" required>
+          <option value="">Select Grade</option>
+          {% for grade in range(8, 13) %}
+          <option value="{{ grade }}">Grade {{ grade }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          placeholder="e.g. Mathematics"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="term">Term</label>
+        <select id="term" name="term" required>
+          <option value="">Select Term</option>
+          {% for term in range(1, 5) %}
+          <option value="{{ term }}">Term {{ term }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="year">Year</label>
+        <input
+          type="number"
+          id="year"
+          name="year"
+          min="2000"
+          max="2100"
+          placeholder="e.g. 2026"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="paper">Question Paper (PDF only, maximum 10 MB)</label>
+        <input
+          type="file"
+          id="paper"
+          name="paper"
+          accept=".pdf,application/pdf"
+          required
+        />
+      </div>
+
+      <button type="submit">Upload Paper</button>
+    </form>
+  </section>
+
+  <p>
+    <a href="{{ url_for('papers.paper_bank') }}">Back to Paper Bank</a>
+  </p>
+</main>
+{% endblock %}

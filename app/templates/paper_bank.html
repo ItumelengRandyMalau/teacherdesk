@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block title %}Question Paper Bank | TeacherDesk{%
+endblock %} {% block header %}
+<header class="navbar">
+  <h1>TeacherDesk</h1>
+
+  <div class="nav-user">
+    <span>Welcome, {{ username }}!</span>
+    <form method="POST" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button type="submit">Logout</button>
+    </form>
+  </div>
+</header>
+{% endblock %} {% block content %}
+<main class="welcome">
+  <p class="eyebrow">ACADEMIC RESOURCES</p>
+
+  <h2>Question Paper Bank</h2>
+
+  <p class="intro">
+    Browse and download question papers uploaded by school staff.
+  </p>
+
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <p class="message">{{ message }}</p>
+  {% endfor %} {% endif %} {% endwith %} {% if session.get("role") in ["admin",
+  "teacher"] %}
+  <p>
+    <a href="{{ url_for('papers.upload_paper') }}">+ Upload Question Paper</a>
+  </p>
+  {% endif %}
+
+  <section class="staff-list">
+    <h3>Available Question Papers</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Grade</th>
+          <th>Subject</th>
+          <th>Term</th>
+          <th>Year</th>
+          <th>Uploaded By</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for paper in question_papers %}
+        <tr>
+          <td>{{ paper.metadata.title }}</td>
+          <td>{{ paper.metadata.grade }}</td>
+          <td>{{ paper.metadata.subject }}</td>
+          <td>{{ paper.metadata.term }}</td>
+          <td>{{ paper.metadata.year }}</td>
+          <td>{{ paper.metadata.uploader_name }}</td>
+          <td>
+            <a
+              href="{{ url_for('papers.download_paper', paper_id=paper._id) }}"
+            >
+              Download
+            </a>
+
+            {% if session.get("role") == "admin" %}
+            <form
+              method="POST"
+              action="{{ url_for('papers.delete_paper', paper_id=paper._id) }}"
+            >
+              <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+              />
+              <button type="submit">Delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">No question papers have been uploaded yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <p>
+    {% if session.get("role") == "admin" %}
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+    {% elif session.get("role") == "teacher" %}
+    <a href="{{ url_for('teacher_dashboard') }}">Back to Dashboard</a>
+    {% else %}
+    <a href="{{ url_for('clerk_dashboard') }}">Back to Dashboard</a>
+    {% endif %}
+  </p>
+</main>
+{% endblock %}

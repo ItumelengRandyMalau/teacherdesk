@@ -26,7 +26,12 @@ def create_app():
         raise RuntimeError("MONGO_URI is not configured.")
 
     mongo.init_app(app)
+
     app.register_blueprint(auth, url_prefix="/auth")
+
+    # Register the Question Paper Bank routes.
+    from app.papers import papers
+    app.register_blueprint(papers, url_prefix="/papers")
 
 
     @app.before_request
