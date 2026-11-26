@@ -6,6 +6,8 @@ from app.models import User, Learner
 from app.learner_utils import generate_learner_number
 from bson import ObjectId
 from flask_wtf.csrf import CSRFProtect
+import secrets
+from werkzeug.security import generate_password_hash
 
 mongo = PyMongo()
 
@@ -25,6 +27,23 @@ def create_app():
 
     mongo.init_app(app)
     app.register_blueprint(auth, url_prefix="/auth")
+
+
+    @app.before_request
+    def enforce_password_change():
+
+        # Temporarily restrict accounts that must replace their password.
+        if session.get("must_change_password"):
+
+            allowed_endpoints = [
+                "auth.change_password",
+                "auth.logout",
+                "static"
+            ]
+
+            if request.endpoint not in allowed_endpoints:
+                return redirect(url_for("auth.change_password"))
+
 
     @app.route("/")
     @login_required
@@ -606,6 +625,47 @@ def create_app():
             username=session["username"],
             staff_members=staff_members
         )
+
+    
+    @app.route("/admin/staff/<staff_id>/reset-password", methods=["POST"])
+    @role_required("admin")
+    def reset_staff_password(staff_id):
+
+        # Only allow administrators to reset teacher and clerk accounts.
+        if not ObjectId.is_valid(staff_id):
+            abort(404)
+
+        staff = mongo.db.users.find_one({
+            "_id": ObjectId(staff_id),
+            "role": {"$in": ["teacher", "clerk"]}
+        })
+
+        if not staff:
+            abort(404)
+
+        # Generate a random temporary password for the staff member.
+        temporary_password = secrets.token_urlsafe(9)
+
+        # Store only the password hash and require a password change.
+        mongo.db.users.update_one(
+            {"_id": ObjectId(staff_id)},
+            {
+                "$set": {
+                    "password_hash": generate_password_hash(
+                        temporary_password
+                    ),
+                    "must_change_password": True
+                }
+            }
+        )
+
+        return render_template(
+            "password_reset_result.html",
+            username=session["username"],
+            staff_username=staff["username"],
+            temporary_password=temporary_password
+        )
+
 
     @app.route("/admin/staff/add", methods=["GET", "POST"])
     @role_required("admin")

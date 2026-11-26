@@ -6,7 +6,7 @@ endblock %} {% block header %}
   <div class="nav-user">
     <span>Welcome, {{ username }}!</span>
     <form method="POST" action="{{ url_for('auth.logout') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <button type="submit">Logout</button>
     </form>
   </div>
@@ -40,6 +40,7 @@ endblock %} {% block header %}
           <th>Username</th>
           <th>Email Address</th>
           <th>Role</th>
+          <th>Actions</th>
         </tr>
       </thead>
 
@@ -49,10 +50,23 @@ endblock %} {% block header %}
           <td>{{ staff.username }}</td>
           <td>{{ staff.email }}</td>
           <td>{{ staff.role|capitalize }}</td>
+          <td>
+            <form
+              method="POST"
+              action="{{ url_for('reset_staff_password', staff_id=staff._id) }}"
+            >
+              <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+              />
+              <button type="submit">Reset Password</button>
+            </form>
+          </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="3">No staff accounts found.</td>
+          <td colspan="4">No staff accounts found.</td>
         </tr>
         {% endfor %}
       </tbody>

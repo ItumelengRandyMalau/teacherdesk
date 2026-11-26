@@ -6,6 +6,11 @@
 
   <p>Sign in to access your staff account.</p>
 
+  <p>
+    <a href="{{ url_for('auth.login') }}">Forgot your password?</a>
+    Please contact your school administrator to request a password reset.
+  </p>
+
   {% if message %}
   <p class="message">{{ message }}</p>
   {% endif %}
